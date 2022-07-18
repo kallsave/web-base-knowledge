@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const memory = window.performance.memory
+
+    // jsHeapSizeLimit: 上下文可用堆的最大提交,单位字节
+    // totalJSHeapSize: 已分配的堆体积,单位字节
+    // usedJSHeapSize: 当前js堆活跃端(segment)的体积,单位字节
+    console.log(memory)
+  </script>
+</body>
+</html>

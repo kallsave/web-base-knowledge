@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .box {
+      width: 100px;
+      height: 100px;
+      transition: transform 1000ms;
+      background: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box"></div>
+</body>
+<script>
+  // https://blog.csdn.net/weixin_33851177/article/details/91457957
+  // https://www.jianshu.com/p/32beff6a33a7
+  // https://m.php.cn/article/488568.html
+
+  // 宏任务执行, Call Stack(如果导致重排,会让dom树重新排列并计算但是不会立即GUI渲染),
+  // 产生的微任务放在微任务队列里 =>
+  // 微任务队列的微任务执行完 =>
+  // GUI渲染线程执行 =>
+  // 下次宏任务执行
+
+  function sleep(timeout) {
+    const currentTime = new Date().getTime()
+    while (true) {
+      if (new Date().getTime() > currentTime + timeout) {
+        return
+      }
+    }
+  }
+
+  const box = document.getElementsByClassName('box')[0]
+
+  window.setTimeout(() => {
+
+    // demo1()
+    demo2()
+    // demo3()
+  }, 1000)
+
+  // 只会渲染一次
+  function demo1() {
+    box.style.background = '#FFF'
+    box.style.background = 'gold'
+    box.style.background = 'peru'
+  }
+
+  // 只会渲染一次
+  const p = Promise.resolve()
+  // 微任务执行完，才会进行 dom 渲染
+  function demo2() {
+    box.style.background = 'gold'
+    // 虽然p已经resolve了,但是p的then函数永远都是放微任务队列里面的
+    p.then(function () {
+      box.style.background = 'peru'
+    })
+  }
+
+  function demo3() {
+    box.style.background = 'gold'
+    setTimeout(function () {
+      box.style.background = '#fff'
+    }, 0)
+  }
+
+  function demo4() {
+    box.style.transform = `translate3d(300px, 0, 0)`
+    box.style.background = 'peru'
+    sleep(5000)
+    // Promise.resolve().then(() => {
+    //   // 触发了重排,dom树重新排列并计算位置为下次GUI渲染做数据准备,但是不会触发GUI渲染
+    //   // const offsetHeight = box.offsetHeight
+    //   // transform和background都不会导致重排,而只是重绘
+    //   box.style.transform = `translate(100px, 0)`
+    //   box.style.background = 'blue'
+    //   // sleep(1000)
+    // })
+    // setTimeout(function () {
+    //   box.style.background = '#fff'
+    // })
+    console.log('一次宏任务执行完毕,下次宏任务执行之前')
+  }
+
+  // vue之所以使用nextTick是因为想得到所有同步队列后最终的dom结果
+  // 但是nextTick的时候,GUI渲染并没有发生(浏览器没有真正渲染到页面上而是计算好了下次渲染的数据)
+  // nextTick执行完毕后,js线程空闲后,GUI开始渲染
+
+</script>
+
+</html>

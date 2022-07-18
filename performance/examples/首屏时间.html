@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .item {
+      width: 200px;
+      height: 200px;
+      background: peru;
+      margin-bottom: 20px;
+    }
+
+    .box {
+      position: relative;
+      padding-top: 50px;
+    }
+
+    img {
+      width: 200px;
+    }
+
+    .active {
+      border: 10px solid gold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <!-- <div class="item"></div> -->
+    <div class="box">
+      <div class="item"></div>
+      <div class="item">
+        <img src="./images/1.jpg" />
+      </div>
+      <div class="item">
+        <img src="./images/2.jpg" />
+      </div>
+      <div class="item"></div>
+      <div class="item active"></div>
+    </div>
+  </div>
+</body>
+<script>
+  // 可以理解为加载到document文档时的时间戳
+  window.navigationStart = performance.timing.navigationStart || window.navigationStart
+
+  const store = []
+  // 创建一个观察器实例并传入回调函数
+  const observer = new MutationObserver(() => {
+    store.push(Date.now())
+  })
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  })
+
+  let count = 0
+  let prevLength = 0
+  let currentLength = 0
+
+  let promiseResolve
+  let promise = new Promise((resolve) => {
+    promiseResolve = resolve
+  })
+
+  const interval = setInterval(() => {
+    currentLength = store.length
+    if (currentLength === prevLength) {
+      count++
+    } else {
+      count = 0
+    }
+    if (count >= 10) {
+      clearInterval(interval)
+      observer.disconnect()
+      promiseResolve()
+    }
+    prevLength = currentLength
+  }, 30)
+
+  async function getFirstScreenTime() {
+    await promise
+    const length = store.length
+    const firstScreenTime = store[length - 1] - window.navigationStart
+    return firstScreenTime
+  }
+
+  ; (async () => {
+    const firstScreenTime = await getFirstScreenTime()
+    console.log(firstScreenTime)
+  })()
+
+
+</script>
+
+</html>

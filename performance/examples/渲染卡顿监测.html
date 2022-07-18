@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  function f(n) {
+    if (n === 1) {
+      return 1
+    }
+    if (n === 2) {
+      return 2
+    }
+    return f(n - 1) + f(n - 2)
+  }
+
+
+  let currentTime = 0
+  let oldCurrentTime = 0
+
+  function animation(now) {
+    if (now) {
+      currentTime = now
+      n++
+      oldCurrentTime = currentTime
+    }
+
+    requestAnimationFrame(animation)
+  }
+
+  setTimeout(() => {
+    console.log(f(39))
+  }, 10000)
+  animation()
+
+</script>
+
+</html>
